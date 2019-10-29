@@ -22,7 +22,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("Test findCountryByCityName method to check if a country can be found by cityName")
+    @DisplayName("Test findCountryByCityName method to check if a country can be found by cityName ")
     public void findCountryByCityName(){
         assertEquals("London", countryService.findCountryByCountryName("United Kingdom").getCapitalCity());
     }
