@@ -94,4 +94,17 @@ public class Country implements Comparable<Country>, Comparator<Country> {
     public int compare(Country o1, Country o2) {
         return o1.getDistance() - o2.getDistance();
     }
+    @Override
+    public boolean equals(Object o) {
+        if(super.equals(o)) {
+            return true;
+        }
+        if(!(o instanceof Country)) {
+            return false;
+        }
+        Country otherCountry = (Country) o;
+        return latitude == otherCountry.getLatitude() && longitude == otherCountry.getLongitude();
+    }
+
+
 }

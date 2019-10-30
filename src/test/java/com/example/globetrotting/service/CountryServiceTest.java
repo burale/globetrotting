@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CountryServiceTest {
 
+
 //    @Autowired
     private CountryService countryService = new CountryService();
 
@@ -22,7 +23,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("Test findCountryByCityName method to check if a country can be found by cityName")
+    @DisplayName("Test findCountryByCityName method to check if a country can be found by cityName ")
     public void findCountryByCityName(){
         assertEquals("London", countryService.findCountryByCountryName("United Kingdom").getCapitalCity());
     }
@@ -31,7 +32,7 @@ class CountryServiceTest {
     @DisplayName("Test findReachableCapitalCitiesByCountryAndLimit method make sure it returns number of capital cities that are reachable by country name and limit")
         public void testFindReachableCapitalCitiesByCountryAndLimit(){
         Country country = new Country("ABC", "London", new Region(), "London", -0.126236, 51.5002);
-        List<String> reachableCapitalCities = countryService.findReachableCapitalCitiesByCountryAndLimit(country, 1000);
+        List<String> reachableCapitalCities = countryService.findReachableCapitalCitiesByGivenCountryAndLimit(country, 1000);
         reachableCapitalCities.stream()
                 .forEach(c -> System.out.println(c));
         assertTrue(reachableCapitalCities.size() > 0);
@@ -40,11 +41,21 @@ class CountryServiceTest {
     @Test
     @DisplayName("Test findReachableCountriesByCapitalCitiesAndLimit method make sure it returns all capital cities that are expected to be reachable by country name and limit")
     public void testFindReachableCapitalCityNamesByCountryAndLimit(){
-        List<String>expectedCapitalCityNames = Arrays.asList("Brussels", "Paris", "Douglas", "Dublin", "Luxembourg", "Amsterdam");
+        List<String>expectedCapitalCityNames = Arrays.asList("Brussels", "Amsterdam", "Luxembourg");
 
         Country country = new Country("ABC", "London", new Region(), "London", -0.126236, 51.5002);
-        List<String> reachableCapitalCities = countryService.findReachableCapitalCitiesByCountryAndLimit(country, 500);
+        List<String> reachableCapitalCities = countryService.findReachableCapitalCitiesByGivenCountryAndLimit(country, 1000);
         assertArrayEquals(expectedCapitalCityNames.toArray(), reachableCapitalCities.toArray());
+    }
+
+    @Test
+    @DisplayName("Test findReachableCapitalCitiesByCountryAndLimit method make sure it returns number of capital cities that are reachable by country name and limit")
+    public void testFindNoOfReachableCapitalCitiesByCountryAndLimit(){
+        Country country = new Country("ABC", "United Kingdom", new Region(), "London", -0.126236, 51.5002);
+        List<String> reachableCapitalCities = countryService.findReachableCapitalCitiesByGivenCountryAndLimit(country, 1000);
+//        reachableCapitalCities.stream()
+//                .forEach(c -> System.out.println(c));
+        assertTrue(reachableCapitalCities.size() > 0);
     }
 
 
