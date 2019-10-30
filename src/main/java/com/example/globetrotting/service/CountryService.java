@@ -4,12 +4,8 @@ import com.example.globetrotting.model.Country;
 import com.example.globetrotting.resource.Countries;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CountryService {
@@ -17,38 +13,45 @@ public class CountryService {
         return Countries.getCountries();
     }
 
-    private List<Country>reachableCountries = new ArrayList<>();
+    private LinkedHashSet<Country>countriesHashSet = new LinkedHashSet<>();
+    private int newLimit;
+    private Country originalCountry;
 
 
-    public List<String> findReachableCapitalCitiesByCountryName(String countryName) {
+    public List<String> findReachableCapitalCitiesByCountryName(String countryName, int limit) {
         Country country = findCountryByCountryName(countryName);
-        List<String> reachableCapitalCities = findReachableCapitalCitiesByCountryAndLimit(country, 1000);
+        System.out.println("FOUND Country = " + country.getCapitalCity() + ", Longitude = " + country.getLongitude()  + ", Latitude = " + country.getLatitude());
+        List<String> reachableCapitalCities = findReachableCapitalCitiesByGivenCountryAndLimit(country, limit);
         return reachableCapitalCities;
     }
 
-    public List<String> findReachableCapitalCitiesByCountryAndLimit(Country country, int limit) {
-        List<String>reachableCapitalCities = new ArrayList<>();
-        Countries.getCountries().stream()
-                .forEach(c -> {
-                    int distance = calculateDistanceInKilometer(country.getLatitude(),
-                            country.getLongitude(), c.getLatitude(), c.getLongitude());
-                    if (distance < limit){
-                        if (country.getLatitude() != c.getLatitude() && country.getLongitude() != c.getLatitude())
-                            reachableCapitalCities.add(c.getCapitalCity());
-                    }
+    public List<String> findReachableCapitalCitiesByGivenCountryAndLimit(Country country, int limit){
+        originalCountry = country;
+        newLimit = limit; int i = 0;
+        do {
+            i++;
+            country = findTheCountryOfClosestReachableCapitalCityByCountryAndLimit(country, newLimit);
+        }while(countriesHashSet.size()==i);
+
+        List<String>reachableCities = new ArrayList<>();
+        countriesHashSet.stream()
+                .forEach(x-> {
+                    reachableCities.add(x.getCapitalCity());
+                    System.out.println("CITY = " + x.getCapitalCity());
                 });
-        return reachableCapitalCities;
 
+        return reachableCities;
     }
 
-    public List<Country> findReachableCapitalCountriesByCountryAndLimit(Country country, int limit) {
+    public Country findTheCountryOfClosestReachableCapitalCityByCountryAndLimit(Country country, int limit) {
+        Country theCountry = null;
         List<Country>reachableCapitalCities = new ArrayList<>();
         Countries.getCountries().stream()
                 .forEach(c -> {
                     int distance = calculateDistanceInKilometer(country.getLatitude(),
                             country.getLongitude(), c.getLatitude(), c.getLongitude());
                     if (distance < limit){
-                        if (country.getLatitude() != c.getLatitude() && country.getLongitude() != c.getLatitude()) {
+                        if (! country.equals(c) && ! originalCountry.equals(c) && ! countriesHashSet.contains(c)) {
                             c.setDistance(distance);
                             reachableCapitalCities.add(c);
                         }
@@ -56,11 +59,21 @@ public class CountryService {
                 });
         if (reachableCapitalCities.size()>0){
             Collections.sort(reachableCapitalCities, new Country());
+            theCountry = reachableCapitalCities.get(0);
+            countriesHashSet.add(theCountry);
+            newLimit = limit - theCountry.getDistance();
+//            System.out.println("******************************************************");
+//            System.out.println();
+//            reachableCapitalCities.stream()
+//                    .forEach(x -> System.out.println("CITY = " + x.getCapitalCity() + ", DISTANCE = " + x.getDistance()));
+            reachableCapitalCities.stream()
+                    .forEach(x -> x.setDistance(0));
+
         }
 
 
 
-        return reachableCapitalCities;
+        return theCountry;
 
     }
 

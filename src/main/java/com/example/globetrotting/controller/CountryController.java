@@ -20,9 +20,9 @@ public class CountryController {
 
         return countryService.findAll();
     }
-    @RequestMapping("/all/city{country-name}")
-    public List<String>getReachableCapitalCities(@PathVariable String countryName){
-
-        return countryService.findReachableCapitalCitiesByCountryName(countryName);    }
+    @RequestMapping("/all/city/{name}")
+    public List<String>getReachableCapitalCities(@PathVariable String name){
+        return countryService.findReachableCapitalCitiesByCountryName(name, 1000);
+    }
 
 }
