@@ -1,7 +1,6 @@
 package com.example.globetrotting.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Comparator;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -9,31 +8,20 @@ public class Country implements Comparable<Country>, Comparator<Country> {
 
     private String id;
     private String name;
-    private Region region;
     private String capitalCity;
     private double longitude;
     private double latitude;
     private int distance;
 
-    public Country(String id, String name, Region region, String capitalCity, double longitude, double latitude) {
+    public Country(String id, String name, String capitalCity, double longitude, double latitude) {
         this.id = id;
         this.name = name;
-        this.region = region;
         this.capitalCity = capitalCity;
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
-    public Country() {
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
+    public Country() {}
 
     public String getId() {
         return id;
@@ -49,14 +37,6 @@ public class Country implements Comparable<Country>, Comparator<Country> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 
     public String getCapitalCity() {
@@ -83,6 +63,14 @@ public class Country implements Comparable<Country>, Comparator<Country> {
         this.latitude = latitude;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     @Override
     public int compareTo(Country c) {
         if (this.distance == c.distance)
@@ -92,7 +80,7 @@ public class Country implements Comparable<Country>, Comparator<Country> {
 
     @Override
     public int compare(Country o1, Country o2) {
-        return o1.getDistance() - o2.getDistance();
+        return o1.distance - o2.distance;
     }
     @Override
     public boolean equals(Object o) {
@@ -103,7 +91,7 @@ public class Country implements Comparable<Country>, Comparator<Country> {
             return false;
         }
         Country otherCountry = (Country) o;
-        return latitude == otherCountry.getLatitude() && longitude == otherCountry.getLongitude();
+        return latitude == otherCountry.latitude && longitude == otherCountry.longitude;
     }
 
 
