@@ -15,7 +15,7 @@ public class CountryService {
 
     private LinkedHashSet<Country>countriesHashSet = new LinkedHashSet<>();
     private int newLimit;
-    private Country originalCountry;
+    private Country originCountry;
 
 
     public List<String> findReachableCapitalCitiesByCountryName(String countryName, int limit) {
@@ -26,7 +26,7 @@ public class CountryService {
     }
 
     public List<String> findReachableCapitalCitiesByGivenCountryAndLimit(Country country, int limit){
-        originalCountry = country;
+        originCountry = country;
         newLimit = limit; int i = 0;
         do {
             i++;
@@ -37,21 +37,20 @@ public class CountryService {
         countriesHashSet.stream()
                 .forEach(x-> {
                     reachableCities.add(x.getCapitalCity());
-                    System.out.println("CITY = " + x.getCapitalCity());
                 });
 
         return reachableCities;
     }
 
     public Country findTheCountryOfClosestReachableCapitalCityByCountryAndLimit(Country country, int limit) {
-        Country theCountry = null;
+        Country closestCountry = null;
         List<Country>reachableCapitalCities = new ArrayList<>();
         Countries.getCountries().stream()
                 .forEach(c -> {
                     int distance = calculateDistanceInKilometer(country.getLatitude(),
                             country.getLongitude(), c.getLatitude(), c.getLongitude());
                     if (distance < limit){
-                        if (! country.equals(c) && ! originalCountry.equals(c) && ! countriesHashSet.contains(c)) {
+                        if (! country.equals(c) && ! originCountry.equals(c) && ! countriesHashSet.contains(c)) {
                             c.setDistance(distance);
                             reachableCapitalCities.add(c);
                         }
@@ -59,13 +58,9 @@ public class CountryService {
                 });
         if (reachableCapitalCities.size()>0){
             Collections.sort(reachableCapitalCities, new Country());
-            theCountry = reachableCapitalCities.get(0);
-            countriesHashSet.add(theCountry);
-            newLimit = limit - theCountry.getDistance();
-//            System.out.println("******************************************************");
-//            System.out.println();
-//            reachableCapitalCities.stream()
-//                    .forEach(x -> System.out.println("CITY = " + x.getCapitalCity() + ", DISTANCE = " + x.getDistance()));
+            closestCountry = reachableCapitalCities.get(0);
+            countriesHashSet.add(closestCountry);
+            newLimit = limit - closestCountry.getDistance();
             reachableCapitalCities.stream()
                     .forEach(x -> x.setDistance(0));
 
@@ -73,7 +68,7 @@ public class CountryService {
 
 
 
-        return theCountry;
+        return closestCountry;
 
     }
 
@@ -85,14 +80,14 @@ public class CountryService {
     }
 
     public final static double AVERAGE_RADIUS_OF_EARTH_KM = 6371;
-    public int calculateDistanceInKilometer(double userLat, double userLng,
-                                            double venueLat, double venueLng) {
+    public int calculateDistanceInKilometer(double originLatitude, double originLongitude,
+                                            double destinationLatitude, double destinationLongitude) {
 
-        double latDistance = Math.toRadians(userLat - venueLat);
-        double lngDistance = Math.toRadians(userLng - venueLng);
+        double latDistance = Math.toRadians(originLatitude - destinationLatitude);
+        double lngDistance = Math.toRadians(originLongitude - destinationLongitude);
 
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(venueLat))
+                + Math.cos(Math.toRadians(originLatitude)) * Math.cos(Math.toRadians(destinationLatitude))
                 * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
