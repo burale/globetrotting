@@ -16,7 +16,7 @@ public class CountryController {
     private CountryService countryService;
 
     @RequestMapping("/all")
-    public List<Country>getAllCities(){
+    public List<Country> getAllCities(){
 
         return countryService.findAll();
     }

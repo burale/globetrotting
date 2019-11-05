@@ -13,7 +13,7 @@ public class CountryService {
         return Countries.getCountries();
     }
 
-    private LinkedHashSet<Country>countriesHashSet = new LinkedHashSet<>();
+    private List<Country> countriesList;
     private int newLimit;
     private Country originCountry;
 
@@ -26,15 +26,16 @@ public class CountryService {
     }
 
     public List<String> findReachableCapitalCitiesByGivenCountryAndLimit(Country country, int limit){
+        countriesList = new ArrayList<>();
         originCountry = country;
         newLimit = limit; int i = 0;
         do {
             i++;
             country = findTheCountryOfClosestReachableCapitalCityByCountryAndLimit(country, newLimit);
-        }while(countriesHashSet.size()==i);
+        }while(countriesList.size()==i);
 
         List<String>reachableCities = new ArrayList<>();
-        countriesHashSet.stream()
+        countriesList.stream()
                 .forEach(x-> {
                     reachableCities.add(x.getCapitalCity());
                 });
@@ -50,7 +51,7 @@ public class CountryService {
                     int distance = calculateDistanceInKilometer(country.getLatitude(),
                             country.getLongitude(), c.getLatitude(), c.getLongitude());
                     if (distance < limit){
-                        if (! country.equals(c) && ! originCountry.equals(c) && ! countriesHashSet.contains(c)) {
+                        if (! country.equals(c) && ! originCountry.equals(c) && ! countriesList.contains(c)) {
                             c.setDistance(distance);
                             reachableCapitalCities.add(c);
                         }
@@ -59,7 +60,7 @@ public class CountryService {
         if (reachableCapitalCities.size()>0){
             Collections.sort(reachableCapitalCities, new Country());
             closestCountry = reachableCapitalCities.get(0);
-            countriesHashSet.add(closestCountry);
+            countriesList.add(closestCountry);
             newLimit = limit - closestCountry.getDistance();
             reachableCapitalCities.stream()
                     .forEach(x -> x.setDistance(0));
