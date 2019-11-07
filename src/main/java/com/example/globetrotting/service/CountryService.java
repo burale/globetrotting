@@ -57,7 +57,7 @@ public class CountryService {
                         }
                     }
                 });
-        if (reachableCapitalCities.size()>0){
+        if (reachableCapitalCities.size()>0){ 
             Collections.sort(reachableCapitalCities, new Country());
             closestCountry = reachableCapitalCities.get(0);
             countriesList.add(closestCountry);
